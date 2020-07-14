@@ -15,6 +15,7 @@ import json
 menu_options         = 0    # User selection
 menu_advance_options = 0    # User selection
 user_search          = ""   # Keyword the user is looking for
+counter              = 0
 
 """
 Supported Endpoints
@@ -30,12 +31,15 @@ DRIVERS_ENDPOINT  = "https://swapi.dev/api/people/?"
 """
 def get_vehicle_info(keyword):
     global menu_options
+    global counter
+
     print("Searching Vehicles and models that match: " + "\"" + keyword + "\"")
 
     """
         Hold the results already filtered
     """
     results = {
+        "count":"",
         # With Pilots  "with_pilots":["name", "pilots"]
         "with_pilots":[],  
         "without_pilots":[]
@@ -74,7 +78,10 @@ def get_vehicle_info(keyword):
                 results['with_pilots'].append(match)
             else:
                 # There was no pilot information found
-                results['without_pilots'].append(name) # Append only vehicle name to the dictionary        
+                results['without_pilots'].append(name) # Append only vehicle name to the dictionary
+
+            counter += 1  
+            
         else:
             if (menu_options == 2):
                 print("\nNo keyword match\n")
@@ -82,8 +89,10 @@ def get_vehicle_info(keyword):
     """
     Display the results
     """
+    results['count'] = (counter)
     print("Results\n")
     print(results)
+    counter = 0 # Reset counter
 
 """
     Get the name of the pilot using API pilot endpoint
@@ -147,7 +156,7 @@ def menu():
             menu_options = int(input("\nSelection: "))
             if (menu_options == 4):
                 print("Bye...")
-                break
+                exit(0)
 
             elif (menu_options == None or menu_options < 0 or menu_options > 4):
                 print("Invalid input")
