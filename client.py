@@ -48,6 +48,7 @@ def get_vehicle_info(keyword):
     r = requests.get(VEHICLES_ENDPOINT) # Get all vehicle data available 
     json_query_results = r.json()       # Extract in JSON format
 
+    
     if (menu_options == 2):
         print("\nAll Results")
     for res in json_query_results['results']: # Go through all results
@@ -129,13 +130,9 @@ def get_full_driver_profile(pilot_name):
 
     driver = requests.get(DRIVERS_ENDPOINT +"search="+pilot_name).json() 
     for res in driver['results']: # Go through all results
-        profile["Driver"].append(res['name'])
-        profile["Driver"].append(res['height'])
-        profile["Driver"].append(res['hair_color'])
-        profile["Driver"].append(res['skin_color'])
-        profile["Driver"].append(res['eye_color'])
-        profile["Driver"].append(res['birth_year'])
-
+        match = {"name": res['name'], "height": res['height'], "hair_color": res['hair_color'], "eye_color": res['eye_color'], "birth": res['birth_year']}
+        profile["Driver"].append(match)
+        
     return profile
     
 """
@@ -159,23 +156,26 @@ def menu():
                 exit(0)
 
             elif (menu_options == None or menu_options < 0 or menu_options > 4):
-                print("Invalid input")
+                print("Invalid input - Out of range")
                 break
 
-            user_search = input("Enter keyword to search for: ")
-        
-            if (user_search == None):
-                print("Invalid input")
-            else:
+        except ValueError:
+            print("Invalid input - Not an integer")
+            break
+
+        user_search = input("Enter keyword to search for: ")
+    
+        if (user_search == None):
+            print("Invalid input - Not a valid search string")
+        else:
+
+            if (menu_options == 1 or menu_options == 2):
                 get_vehicle_info(user_search)
                 advance_menu()
                 # TODO: Should do some better input validation - make sure that input is safe - No injections, symbols, etc.
                 print("\n")
-
-        except ValueError:
-            print("Invalid input")
-            break
-
+            elif (menu_options == 3):
+                print("Not supported - Wookie mode")
 """
     Second menu which allows the user to search for the profile of the driver
     @TODO: Needs error handling
