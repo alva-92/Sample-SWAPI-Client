@@ -1,7 +1,6 @@
 """
     This file is part of Sample-SWAPI-Client which is released under an GNU GPLv3 License.
     See file README or go to LICENSE for full license details.
-
     @name         client.py
     @description  This program initializes a client to the Star Wars API (SWAPI)
     @author       Gerardo Enrique Alvarenga
@@ -75,8 +74,26 @@ def get_vehicle_info(keyword):
                 #num_pilots = len(res["pilots"])
                 #for x in range(num_pilots): # Iterate through pilot key values and get the associated info
                 p_name = get_pilot_information(res["pilots"]) # Get the info of the associated pilots
-                match = {"name": name, "pilots": p_name}
-                results['with_pilots'].append(match)
+                vechile_film_list = res["films"]
+                #inner_join = []
+                
+                for pilot in p_name:
+                    inner_join = []
+                    person_film_list = pilot["films"]
+                
+                    for film in vechile_film_list:
+                        if film in person_film_list:
+                            film_res = requests.get(film).json()
+                            inner_join.append(film_res['title'])
+                    
+                    match = {"name": name, "pilots": {"name":pilot["name"], "movies": inner_join} }
+                    results['with_pilots'].append(match)
+                
+                print(inner_join)
+                
+                #movies = get_associated_movies(res["films"])
+                # match = {"name": name, "pilots": p_name }
+                # results['with_pilots'].append(match)
             else:
                 # There was no pilot information found
                 results['without_pilots'].append(name) # Append only vehicle name to the dictionary
@@ -94,7 +111,58 @@ def get_vehicle_info(keyword):
     print("Results\n")
     print(results)
     counter = 0 # Reset counter
+    
 
+#     {
+#     "count": 4,
+#     "with_pilots": [
+#         {
+#             "name": "Imperial Speeder Bike",
+#             "pilots": [
+#                 {"pilot_name":"Luke Skywalker", "movie_name": ["movie_1", "movie_2"]}
+#                 "Leia Organa"
+#             ]
+#         },
+#         {
+#             "name": "Sith speeder",
+#             "pilots": ["Darth Maul"]
+#         },
+#         {
+#             "name": "Zephyr-G swoop bike",
+#             "pilots": ["Anakin Skywalker"]
+#         },
+#         {
+#             "name": "Tsmeu-6 personal wheel bike",
+#             "pilots": ["Grievous"]
+#         }
+#     ],
+#     "without_pilots": []
+#     }
+
+
+#     Other collection {
+#        "characters_id": [character id],
+#        "vehicles_id": vehicle_id
+         
+#    }
+
+
+# def get_associated_movies(movie_endpoint, other_collection):
+    
+    
+#     associated_movies = []
+#     num_movies = len(movie_endpoint)
+    
+#     for x in range(num_movies):
+#         r = requests.get(movie_endpoint[x].json())
+        
+        
+#         if (r['characters'] == other_collection[i].get("character_id") and r['vehicles'])
+        
+#             associated_movies.append(r['name'])
+    
+#     return associated_movies
+    
 """
     Get the name of the pilot using API pilot endpoint
     Called by get_vehicle info
@@ -103,16 +171,18 @@ def get_pilot_information(pilot_query):
     global menu_options
     if (menu_options == 2):
         print("\nGetting pilot info: " + str(pilot_query))
+        
     pilots = []                     # List to hold the pilot's name if more than 1 is associated to a vehicle
     num_pilots = len(pilot_query)
     for x in range(num_pilots):
         if (menu_options == 2):
             print("\nQuerying: " + str(pilot_query[x]))
         json_pilot_info = requests.get(pilot_query[x]).json() # Process one GET request at the tiem
-        pilots.append(json_pilot_info['name'])                # Add the name to the list
+        #pilots.append(json_pilot_info['name'])                # Add the name to the list
+        pilots.append(json_pilot_info)  
 
-    if (menu_options == 2):
-        print(pilots)
+#     if (menu_options == 2):
+#         print(pilots)
 
     return pilots
 
@@ -176,6 +246,7 @@ def menu():
                 print("\n")
             elif (menu_options == 3):
                 print("Not supported - Wookie mode")
+
 """
     Second menu which allows the user to search for the profile of the driver
     @TODO: Needs error handling
